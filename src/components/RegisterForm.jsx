@@ -9,7 +9,7 @@ function RegisterForm() {
                 className='flex flex-col gap-5 p-4 pt-3'
             >
                 <div className="felx gap-2">
-                    <input type="text" className="input w-full" placeholder='First name' />
+                    <input type="text" className="input w-full " placeholder='First name' />
                     <input type="text" className="input w-full" placeholder='Last name' />
                 </div>
                 <input type="text" className="input w-full" placeholder='Email or Phone number' />
@@ -22,7 +22,6 @@ function RegisterForm() {
                 <button className="btn btn-secondary text-xl">
                     Sign up
                 </button>
-
             </form>
         </>
 

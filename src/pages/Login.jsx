@@ -9,6 +9,7 @@ function Login() {
                     <div className="flex flex-col gap-4 mt-20 basis-3/5 max-md:text-center">
                         <div className="text-5xl text-primary font-bold">
                             Fakebook
+                            <input type="checkbox" value="dark" className="toggle theme-controller" />
                         </div>
                         <h2 className="text-[30px] leading-8 mt-3 w-128.5 max-md:w-auto max-md:text-center">
                             Fakebook helps you connect and share with the people in your life.
@@ -47,7 +48,7 @@ function Login() {
                     <form method="dialog">
                         <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
                     </form>
-                    <RegisterForm/>
+                    <RegisterForm />
                 </div>
             </dialog>
         </>
