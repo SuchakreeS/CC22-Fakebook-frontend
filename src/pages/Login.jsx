@@ -1,7 +1,31 @@
 import RegisterForm from "@/components/RegisterForm";
+import useUserStore from "@/stores/userStore";
+import { loginSchema } from "@/validations/schema";
+import { zodResolver } from "@hookform/resolvers/zod";
 import React from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "react-toastify";
 
 function Login() {
+    const token = useUserStore(state=>state.token)
+    const login = useUserStore(state=>state.login)
+    const { register, handleSubmit, formState, reset } = useForm({
+        resolver: zodResolver(loginSchema),
+        mode: 'onSubmit'
+    })
+    const { errors, isSubmitting, isValid } = formState
+
+    const onSubmit = async (body) => {
+        try {
+            // toast.info(JSON.stringify(body, null, 2))
+            const resp = await login(body)
+            toast.success(JSON.stringify(resp.data))
+        } catch (err) {
+            console.dir(err)
+            const errMsg = err.resp?.data.message || err.message
+            toast.error(errMsg)
+        }
+    }
     return (
         <>
             <div className="h-175 pt-20 pb-28 bg-base-200">
@@ -20,26 +44,33 @@ function Login() {
                     </div>
                     <div className=" flex-1">
                         <div className="card bg-base-100 w-full h-87.5 shadow-xl mt-8">
-                            <form onSubmit={e => e.preventDefault()}>
-                                <div className="card-body gap-3 p-4">
-                                    <input type="text" className="input input-primary w-full"
-                                        placeholder="E-mail or Phone number"
-                                    />
-                                    <input type="password" className="input input-primary w-full"
-                                        placeholder="Password"
-                                    />
-                                    <button className="btn btn-primary text-xl">Log in</button>
-                                    <p className="text-center cursor-pointer opacity-60">Forgotten password?</p>
-                                    <div className="divider my-0"></div>
-                                    <button className="btn btn-secondary"
-                                        onClick={() => document.getElementById('register-form').showModal()}
-                                    >
-                                        Create new account
-                                    </button>
-                                </div>
+                            <form onSubmit={handleSubmit(onSubmit)}>
+                                <fieldset disabled={isSubmitting}>
+                                    <div className="card-body gap-3 p-4">
+                                        <div className="w-full">
+                                            <input type="text" className="input input-primary w-full"
+                                                placeholder="E-mail or Phone number" 
+                                                {...register('identity')}/>
+                                            <p className="text-sm text-error">{errors.identity?.message}</p>
+                                        </div>
+                                        <div className="w-full">
+                                            <input type="password" className="input input-primary w-full"
+                                                placeholder="Password" 
+                                                {...register('password')}/>
+                                                <p className="text-sm text-error">{errors.password?.message}</p>
+                                        </div>
+                                        <button className="btn btn-primary text-xl" disabled={!isValid}>Log in</button>
+                                        <p className="text-center cursor-pointer opacity-60">Forgotten password?</p>
+                                        <div className="divider my-0"></div>
+                                        <button className="btn btn-secondary"
+                                            onClick={() => document.getElementById('register-form').showModal()}
+                                        >
+                                            Create new account
+                                        </button>
+                                    </div>
+                                </fieldset>
                             </form>
                         </div>
-
                     </div>
                 </div>
             </div>
