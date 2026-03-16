@@ -8,6 +8,7 @@ import { toast } from "react-toastify";
 
 function Login() {
     const token = useUserStore(state=>state.token)
+    const user = useUserStore(state => state.user)
     const login = useUserStore(state=>state.login)
     const { register, handleSubmit, formState, reset } = useForm({
         resolver: zodResolver(loginSchema),
@@ -18,8 +19,9 @@ function Login() {
     const onSubmit = async (body) => {
         try {
             // toast.info(JSON.stringify(body, null, 2))
+            await new Promise(resolve => setTimeout(resolve, 2000))
             const resp = await login(body)
-            toast.success(JSON.stringify(resp.data))
+            toast.success(resp.data.message)
         } catch (err) {
             console.dir(err)
             const errMsg = err.resp?.data.message || err.message
@@ -34,6 +36,7 @@ function Login() {
                         <div className="text-5xl text-primary font-bold">
                             Fakebook
                             <input type="checkbox" value="dark" className="toggle theme-controller" />
+                            <p className="mx-2">Hello, {user?.firstName}</p>
                         </div>
                         <h2 className="text-[30px] leading-8 mt-3 w-128.5 max-md:w-auto max-md:text-center">
                             Fakebook helps you connect and share with the people in your life.
@@ -59,7 +62,9 @@ function Login() {
                                                 {...register('password')}/>
                                                 <p className="text-sm text-error">{errors.password?.message}</p>
                                         </div>
-                                        <button className="btn btn-primary text-xl" disabled={!isValid}>Log in</button>
+                                        <button className="btn btn-primary text-xl" disabled={!isValid}>Log in
+                                            {isSubmitting && <span className="loading loading-infinity loading-xs"></span>}
+                                        </button>
                                         <p className="text-center cursor-pointer opacity-60">Forgotten password?</p>
                                         <div className="divider my-0"></div>
                                         <button className="btn btn-secondary"
