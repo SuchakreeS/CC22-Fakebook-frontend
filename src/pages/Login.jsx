@@ -19,7 +19,7 @@ function Login() {
     const onSubmit = async (body) => {
         try {
             // toast.info(JSON.stringify(body, null, 2))
-            await new Promise(resolve => setTimeout(resolve, 2000))
+            await new Promise(resolve => setTimeout(resolve, 1000))
             const resp = await login(body)
             toast.success(resp.data.message)
         } catch (err) {
