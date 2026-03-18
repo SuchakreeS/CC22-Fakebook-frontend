@@ -3,11 +3,36 @@ import Avatar from "./avatar"
 import { PhotoIcon2 } from "@/icons"
 import { useState } from "react"
 import AddPicture from "./AddPicture"
+import { toast } from "react-toastify"
+import uploadCloud from "@/utils/uploadCloud"
+import usePostStore from "@/stores/postStore"
 
 function PostForm() {
     const user = useUserStore(state => state.user)
+    const createPost = usePostStore(state => state.createPost)
     const [addPic, setAddPic] = useState(false)
     const [file, setFile] = useState(null)
+    const [message, setMessage] = useState('')
+    const [loading, setLoading] = useState(false)
+
+    const hdlCreatePost = async () => {
+        let imageUrl = ''
+        setLoading(true)
+        try {
+            if (file) {
+                imageUrl = await uploadCloud(file)
+            }
+            const body = { message: message, image: imageUrl }
+            const resp = await createPost(body)
+            setLoading(false)
+            document.getElementById('postform').close()
+        } catch (err) {
+            console.dir(err)
+            const errMsg = err.response?.data.message || err.message
+            toast.error(err.message)
+            setLoading(false)
+        }
+    }
     return (
         <div className='flex flex-col gap-2'>
             <h3 className="text-xl text-center">Create post</h3>
@@ -27,16 +52,21 @@ function PostForm() {
             </div>
             <textarea className='textarea textarea-ghost w-full'
                 placeholder={`what do you think? ${user.firstName}`}
+                value={message} rows={message.split('\n').length} onChange={e=>setMessage(e.target.value) }
             ></textarea>
             {addPic && <AddPicture file={file} setFile={setFile} />}
             <div className="flex border rounded-lg p-2 justify-between items-center">
                 <p>add with your post</p>
                 <div className="flex justify-center items-center w-10 h-10 rounded-full bg-slate-100 hover:bg-slate-200 active:scale-110"
-                onClick={()=>setAddPic(prv=>!prv)}>
+                    onClick={() => setAddPic(prv => !prv)}>
                     <PhotoIcon2 className='w-7' />
                 </div>
             </div>
-                <button className='btn btn-sm btn-primary'>Create Post</button>
+            <button className='btn btn-sm btn-primary' onClick={hdlCreatePost}
+            disabled={loading || (!message.trim()) && !file}
+            >Create Post
+            {loading && <span className="loading loading-infinity loading-sm"></span>}
+            </button>
         </div>
     )
 }
